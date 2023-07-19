@@ -1,14 +1,19 @@
 package com.example.composepokedexmvvm.pokemon_list
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.capitalize
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.palette.graphics.Palette
+import com.example.composepokedexmvvm.R
 import com.example.composepokedexmvvm.data.model.PokeDexListEntry
 import com.example.composepokedexmvvm.repository.PokemonRepository
 import com.example.composepokedexmvvm.util.Constants.PAGE_SIZE
@@ -97,19 +102,12 @@ class PokemonListViewModel @Inject constructor(
                     loadError.value = result.message!!
                     isLoading.value = false
                 }
+
+                else -> {
+
+                }
             }
 
-        }
-    }
-
-
-    fun calculateDominantColor(drawable: Drawable, onFinish: (Color) -> Unit) {
-        val bitmap = (drawable as BitmapDrawable).bitmap.copy(Bitmap.Config.ARGB_8888, true)
-
-        Palette.from(bitmap).generate { palette ->
-            palette?.dominantSwatch?.rgb?.let {
-                onFinish(Color(it))
-            }
         }
     }
 }

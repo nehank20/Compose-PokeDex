@@ -38,11 +38,13 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.annotation.ExperimentalCoilApi
@@ -184,6 +186,7 @@ fun PokeDexEntry(
     var dominantColor by remember {
         mutableStateOf(defaultDominantColor)
     }
+    val context = LocalContext.current
 
     Box(
         contentAlignment = Center,
@@ -201,12 +204,11 @@ fun PokeDexEntry(
             )
             .clickable {
                 navController.navigate(
-                    route = "pokemon_detail_screen/${dominantColor.toArgb()}/${entry.pokemonName}"
+                    route = "pokemon_detail_screen/${entry.pokemonName}"
                 )
             }
     ) {
         Column {
-
             Image(
                 painter = rememberImagePainter(entry.imageUrl),
                 contentDescription = null,
@@ -214,29 +216,6 @@ fun PokeDexEntry(
                     .size(128.dp)
                     .align(CenterHorizontally)
             )
-
-            // TODO: Palette color to bg cards
-
-//            CoilImage(request = ImageRequest.Builder(LocalContext.current)
-//                .data(entry.imageUrl)
-//                .target {
-//                    viewModel.calculateDominantColor(it) {
-//                        dominantColor = it
-//                    }
-//                }
-//                .build(),
-//                contentDescription = entry.pokemonName,
-//                fadeIn = true,
-//                modifier = Modifier
-//                    .size(120.dp)
-//                    .align(CenterHorizontally)
-//            ) {
-//                CircularProgressIndicator(
-//                    color = MaterialTheme.colors.primary,
-//                    modifier = Modifier.scale(0.5F)
-//                )
-//            }
-
             Text(
                 text = entry.pokemonName,
                 fontFamily = RobotoCondensed,
