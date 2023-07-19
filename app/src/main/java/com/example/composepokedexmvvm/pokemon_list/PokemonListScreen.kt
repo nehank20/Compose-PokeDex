@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
@@ -52,7 +53,8 @@ import com.example.composepokedexmvvm.ui.theme.RobotoCondensed
 
 @Composable
 fun PokemonListScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: PokemonListViewModel = hiltViewModel()
 ) {
     Surface(
         color = MaterialTheme.colors.background,
@@ -75,7 +77,7 @@ fun PokemonListScreen(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-
+                viewModel.searchPokemonList(it)
             }
             Spacer(modifier = Modifier.height(16.dp))
             PokemonList(navController = navController)
@@ -113,7 +115,7 @@ fun SearchBar(
                 .background(Color.White, CircleShape)
                 .padding(horizontal = 20.dp, vertical = 12.dp)
                 .onFocusChanged {
-                    isHintDisplayed = !it.isFocused
+                    isHintDisplayed = !it.isFocused && textValue.isNotEmpty()
                 }
         )
 
@@ -136,6 +138,7 @@ fun PokemonList(
     val endReached by remember { viewModel.endReached }
     val loadError by remember { viewModel.loadError }
     val isLoading by remember { viewModel.isLoading }
+    val isSearching by remember {viewModel.isSearching}
 
     LazyColumn(contentPadding = PaddingValues(16.dp)) {
         val itemCount = if (pokemonList.size % 2 == 0) {
@@ -144,7 +147,7 @@ fun PokemonList(
             pokemonList.size / 2 + 1
         }
         items(itemCount) {
-            if (it >= itemCount - 1 && !endReached && !isLoading) {
+            if (it >= itemCount - 1 && !endReached && !isLoading && !isSearching) {
                 viewModel.loadPokemonPaginated()
             }
             PokemonPokedexRow(rowIndex = it, entries = pokemonList, navController = navController)
@@ -154,12 +157,12 @@ fun PokemonList(
     Box(
         contentAlignment = Center,
         modifier = Modifier.fillMaxSize()
-    ){
-        if(isLoading){
-            CircularProgressIndicator(color =  MaterialTheme.colors.primary)
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator(color = MaterialTheme.colors.primary)
         }
 
-        if(loadError.isNotEmpty()){
+        if (loadError.isNotEmpty()) {
             RetrySection(error = loadError) {
                 viewModel.loadPokemonPaginated()
             }
@@ -241,11 +244,11 @@ fun PokeDexEntry(
                 fontSize = 20.sp,
                 modifier = Modifier.fillMaxWidth()
             )
-
         }
-
     }
+
 }
+
 
 @Composable
 fun PokemonPokedexRow(
